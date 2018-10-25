@@ -9,7 +9,7 @@ $ git checkout -b branch_name #这里创建自己的分支并 checkout 进去
 ```
 
 每次写代码之前，先更新一下，与远端保持同步
-```
+```bash
 $ git checkout master
 $ git pull #更新 master 分支
 $ git checkout branch_name
