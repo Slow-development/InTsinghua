@@ -4,7 +4,7 @@
 
 初始化分支
 ```bash
-$ git clone git@github.com:Steve-Tod/CPU.git
+$ git clone git@github.com:Slow-development/InTsinghua.git 
 $ git checkout -b branch_name #这里创建自己的分支并 checkout 进去
 ```
 
