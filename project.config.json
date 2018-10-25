@@ -11,9 +11,9 @@
 		"newFeature": true
 	},
 	"compileType": "miniprogram",
-	"libVersion": "2.3.0",
-	"appid": "wxe6fab79075a9d74f",
-	"projectname": "InTsinghua",
+	"libVersion": "2.0.4",
+	"appid": "wx3af996d04a19f208",
+	"projectname": "Family_APP_WechatMini",
 	"debugOptions": {
 		"hidedInDevtools": []
 	},
