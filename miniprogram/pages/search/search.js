@@ -1,26 +1,25 @@
-// pages/index/index.js
-var app = getApp()
+// pages/search/search.js
 Page({
 
   /**
    * 页面的初始数据
    */
   data: {
-  
+
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-  
+
   },
 
   /**
    * 生命周期函数--监听页面初次渲染完成
    */
   onReady: function () {
-  
+
   },
 
   /**
@@ -63,10 +62,5 @@ Page({
    */
   onShareAppMessage: function () {
 
-  },
-  goToMap: function (param) {
-    wx.navigateTo({
-      url: '/pages/map/map',
-    })
   }
 })
