@@ -1,5 +1,5 @@
 // pages/map/map.js
-var app = getApp()
+const app = getApp()
 var QQMapWX = require('../../utils/qqmap-wx-jssdk.js')
 var qqmapsdk
 var markers = []
@@ -23,200 +23,22 @@ Page({
     //set scrollHeight
     scrollHeight: 27,
     //set toView
-    toView: ''
+    toView: '',
+    //cloud imgUrl
+    imgSmallUrl: ""
   },
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function() {
-    markers.push({ //40.003348,116.326192
-      iconPath: "/picture/icon_teaching.png",
-      id: 9999999,
-      latitude: 40.003348,
-      longitude: 116.326192,
-      title: '清华大学',
-      width: 40,
-      height: 50,
-      imageUrl: "http://s8.sinaimg.cn/middle/59710852t7a495303d677&690"
-
-    }, { //39.999915,116.315222
-      iconPath: "/picture/icon_gateway.png",
-      id: 1,
-      latitude: 39.999915,
-      longitude: 116.315222,
-      title: '清华西门',
-      width: 40,
-      height: 50,
-      imageUrl: "http://s8.sinaimg.cn/middle/59710852t7a495303d677&690"
-
-    }, { //40.000958,116.324433
-      iconPath: "/picture/icon_scene.png",
-      id: 2,
-      latitude: 40.000958,
-      longitude: 116.324433,
-      title: '清华二校门',
-      width: 40,
-      height: 50,
-      imageUrl: "http://s8.sinaimg.cn/middle/59710852t7a495303d677&690"
-
-    }, { //40.001402,116.329143
-      iconPath: "/picture/icon_museum.png",
-      id: 201,
-      latitude: 40.001402,
-      longitude: 116.329143,
-      title: '新清华学堂',
-      width: 40,
-      height: 50,
-      imageUrl: "http://s8.sinaimg.cn/middle/59710852t7a495303d677&690"
-
-    }, { //40.001682,116.332592
-      iconPath: "/picture/icon_teaching.png",
-      id: 3,
-      latitude: 40.001682,
-      longitude: 116.332592,
-      title: '中央主楼',
-      width: 40,
-      height: 50,
-      imageUrl: "http://s8.sinaimg.cn/middle/59710852t7a495303d677&690"
-
-    }, { //40.006629,116.331782
-      iconPath: "/picture/icon_gateway.png",
-      id: 601,
-      latitude: 40.006629,
-      longitude: 116.331782,
-      title: '东操入口',
-      width: 40,
-      height: 50,
-      imageUrl: "http://s8.sinaimg.cn/middle/59710852t7a495303d677&690"
-
-    }, { //40.005840,116.332287
-      iconPath: "/picture/icon_sports.png",
-      id: 401,
-      latitude: 40.005840,
-      longitude: 116.332287,
-      title: '东大操场',
-      width: 40,
-      height: 50,
-      imageUrl: "http://s8.sinaimg.cn/middle/59710852t7a495303d677&690"
-
-    }, { //40.009990,116.329540
-      iconPath: "/picture/icon_sports.png",
-      id: 402,
-      latitude: 40.009990,
-      longitude: 116.329540,
-      title: '紫荆操场',
-      width: 40,
-      height: 50,
-      imageUrl: "http://s8.sinaimg.cn/middle/59710852t7a495303d677&690"
-
-    }, { //40.009789,116.326638
-      iconPath: "/picture/icon_dormitory.png",
-      id: 301,
-      latitude: 40.009789,
-      longitude: 116.326638,
-      title: '紫荆公寓一号楼',
-      width: 40,
-      height: 50,
-      imageUrl: "http://s8.sinaimg.cn/middle/59710852t7a495303d677&690"
-
-    }, { //40.009591,116.325651
-      iconPath: "/picture/icon_dormitory.png",
-      id: 602,
-      latitude: 40.009591,
-      longitude: 116.325651,
-      title: '紫荆公寓一号楼一单元',
-      width: 40,
-      height: 50,
-      imageUrl: "http://s8.sinaimg.cn/middle/59710852t7a495303d677&690"
-
-    }, { //40.009604,116.325962
-      iconPath: "/picture/icon_dormitory.png",
-      id: 603,
-      latitude: 40.009604,
-      longitude: 116.325962,
-      title: '紫荆公寓一号楼二单元',
-      width: 40,
-      height: 50,
-      imageUrl: "http://s8.sinaimg.cn/middle/59710852t7a495303d677&690"
-
-    }, { //40.009620,116.326391
-      iconPath: "/picture/icon_dormitory.png",
-      id: 604,
-      latitude: 40.009620,
-      longitude: 116.326391,
-      title: '紫荆公寓一号楼三单元',
-      width: 40,
-      height: 50,
-      imageUrl: "http://s8.sinaimg.cn/middle/59710852t7a495303d677&690"
-
-    }, { //40.009657,116.326654
-      iconPath: "/picture/icon_dormitory.png",
-      id: 605,
-      latitude: 40.009657,
-      longitude: 116.326654,
-      title: '紫荆一号楼四单元',
-      width: 40,
-      height: 50,
-      imageUrl: "http://s8.sinaimg.cn/middle/59710852t7a495303d677&690"
-
-    }, { //40.009809,116.326810
-      iconPath: "/picture/icon_dormitory.png",
-      id: 606,
-      latitude: 40.009809,
-      longitude: 116.326810,
-      title: '紫荆公寓一号楼五单元',
-      width: 40,
-      height: 50,
-      imageUrl: "http://s8.sinaimg.cn/middle/59710852t7a495303d677&690"
-
-    }, { //40.010019,116.327040
-      iconPath: "/picture/icon_dormitory.png",
-      id: 607,
-      latitude: 40.010019,
-      longitude: 116.327040,
-      title: '紫荆公寓一号楼六单元',
-      width: 40,
-      height: 50,
-      imageUrl: "http://s8.sinaimg.cn/middle/59710852t7a495303d677&690"
-
-    }, { //40.003021,116.322856
-      iconPath: "/picture/icon_scene.png",
-      id: 501,
-      latitude: 40.003021,
-      longitude: 116.322856,
-      title: '水木清华',
-      width: 40,
-      height: 50,
-      imageUrl: "http://s8.sinaimg.cn/middle/59710852t7a495303d677&690"
-
-    }, { //40.002294,116.325055
-      iconPath: "/picture/icon_teaching.png",
-      id: 502,
-      latitude: 40.002294,
-      longitude: 116.325055,
-      title: '清华学堂',
-      width: 40,
-      height: 50,
-      imageUrl: "http://s8.sinaimg.cn/middle/59710852t7a495303d677&690"
-
-    }, { //39.996643,116.332769
-      iconPath: "/picture/icon_gateway.png",
-      id: 4,
-      latitude: 39.996643,
-      longitude: 116.332769,
-      title: '清华东南门',
-      width: 40,
-      height: 50,
-      imageUrl: "http://s8.sinaimg.cn/middle/59710852t7a495303d677&690"
-    }),
-
-
+    var that = this;
+    //利用云函数初始化markers
+    that.markersInit();
 
     //实例化API
     qqmapsdk = new QQMapWX({
       key: 'AT7BZ-UHBW2-7TYUQ-C2JGU-YDKVE-IWBA5'
     });
-    var that = this;
 
     // 获取定位，并把设为map中心位置
     app.getLocationInfo(function(locationInfo) {
@@ -224,7 +46,7 @@ Page({
         longitude: locationInfo.longitude,
         latitude: locationInfo.latitude,
       })
-    })
+    });
 
     //set the width and height
     // 动态设置map的宽和高
@@ -238,7 +60,8 @@ Page({
 
           })
         }
-      }),
+      });
+
       //定时器函数
       that.timing();
   },
@@ -354,8 +177,30 @@ Page({
       })
     }
   },
-
-
+  markersInit: function() {
+    app.globalData.site.forEach(function(item,index) {
+      wx.cloud.downloadFile({
+        fileID: item.img_small_id,
+        success: res => {
+          // get temp file path
+          console.log(res.tempFilePath)
+          markers[index].imageUrl = res.tempFilePath
+        },
+        fail: err => {
+          // handle error
+        }
+      });
+      markers[index] = {
+        id: item.index,
+        longitude: item.location.longitude,
+        latitude: item.location.latitude,
+        title: item.name,
+        iconPath: "/picture/icon_scene.png",
+        height: 50,
+        width: 40
+      }
+    })
+  },
   navigateToHere: function(e) {
     var that = this
     destinationId = e.currentTarget.id
