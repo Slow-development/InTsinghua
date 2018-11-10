@@ -1,17 +1,18 @@
 //app.js
 App({
-  onLaunch: function () {
+  onLaunch: function() {
     // 展示本地存储能力
-    var logs = wx.getStorageSync('logs') || []
-    logs.unshift(Date.now())
-    wx.setStorageSync('logs', logs)
+    var logs = wx.getStorageSync('logs') || [];
+    logs.unshift(Date.now());
+    wx.setStorageSync('logs', logs);
 
     // 登录
     wx.login({
       success: res => {
         // 发送 res.code 到后台换取 openId, sessionKey, unionId
       }
-    })
+    });
+
     // 获取用户信息
     wx.getSetting({
       success: res => {
@@ -28,12 +29,30 @@ App({
                 this.userInfoReadyCallback(res)
               }
             }
-          })
+          });
         }
       }
-    })
+    });
+
+    // 调用云函数，获取所有数据并放入全局变量中
+    wx.cloud.init();
+    wx.cloud.callFunction({
+      name: 'getAllSites',
+      success: res => {
+        this.globalData.site = res.result.data;
+      },
+      fail: err => {
+        wx.showToast({
+          icon: 'none',
+          title: '获取云端数据失败！',
+        })
+        console.error('[云函数] [getAllSites] 调用失败：', err)
+      }
+    });
   },
+
   globalData: {
-    userInfo: null
-  }
+    userInfo: null,
+    site: []
+  },
 })
