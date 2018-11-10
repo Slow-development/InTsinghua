@@ -28,7 +28,7 @@ width: 360px;height :500px;
         <text class='tabText'>{{item.title}}</text>
       </label>
       <button id='{{item.id}}' class='tabButton' bindtap='navigateToHere'>
-        <image class="naviImage" src="http://img.1688wan.com/uploads/allimg/130626/11_062622153EM6.jpg"></image>
+        <image class="naviImage" src="/picture/icon_navigate.png"></image>
       </button>
     </view>
   </scroll-view>
