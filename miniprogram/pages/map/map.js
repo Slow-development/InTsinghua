@@ -25,7 +25,8 @@ Page({
     //set toView
     toView: '',
     //cloud imgUrl
-    imgSmallUrl: ""
+    imgSmallUrl: "",
+    navigating: 0,
   },
   /**
    * 生命周期函数--监听页面加载
@@ -251,7 +252,8 @@ Page({
                 points: pl,
                 color: '#FF0000DD',
                 width: 2
-              }]
+              }],
+              navigating: navigating,
             })
           }
         };
@@ -263,12 +265,13 @@ Page({
     })
   },
   quitNavigate: function() {
-    var that = this
-    var thatScale = 0
+    var that = this;
+    var thatScale = 0;
+    navigating = 0;
     that.setData({
-      polyline: []
+      polyline: [],
+      navigating: navigating,
     })
-    navigating = 0
     console.log("navigating", navigating)
     that.mapCtx.getScale({
       success: function(res) {

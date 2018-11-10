@@ -14,7 +14,7 @@ width: 360px;height :500px;
       <cover-image class="img2" src="/picture/icon_location.png" />
     </cover-view>
   </cover-view>
-  <cover-view class = "button1" bindtap="quitNavigate">退出导航</cover-view>
+  <cover-view class="button1" bindtap="quitNavigate" wx:if="{{navigating==1}}">退出导航</cover-view>
 </map>
 
 <view>
