@@ -27,6 +27,7 @@ Page({
     //cloud imgUrl
     imgSmallUrl: "",
     navigating: 0,
+    scale: 16,
   },
   /**
    * 生命周期函数--监听页面加载
@@ -35,6 +36,7 @@ Page({
     var that = this;
     //利用云函数初始化markers
     that.markersInit();
+    that.scale = 16;
 
     //实例化API
     qqmapsdk = new QQMapWX({
@@ -164,6 +166,7 @@ Page({
       toView: 'm' + e.markerId,
     })
   },
+
   //change the size of button tab
   ctrlScroll: function (e) {
     if (this.data.mapHeight == 70) {
@@ -178,6 +181,7 @@ Page({
       })
     }
   },
+
   markersInit: function() {
     app.globalData.site.forEach(function(item,index) {
       wx.cloud.downloadFile({
@@ -202,8 +206,34 @@ Page({
       }
     })
   },
+
+  calculateScale: function(deltaX, deltaY) {
+    // find the suitable scale value for a given region
+    var delta = 0;
+    if (deltaX > deltaY)
+      delta = deltaX;
+    else
+      delta = deltaY;
+    var scale = 16;
+    if (delta > 0.2)
+      scale = 12;
+    else if (delta > 0.1)
+      scale = 13;
+    else if (delta > 0.04)
+      scale = 14;
+    else if (delta > 0.02)
+      scale = 15;
+    else if (delta > 0.01)
+      scale = 16;
+    else if (delta > 0.005)
+      scale = 17;
+    else
+      scale = 18;
+    return scale;
+  },
+
   navigateToHere: function(e) {
-    var that = this
+    var that = this;
     destinationId = e.currentTarget.id
     console.log(e.currentTarget.id)
     console.log("markers", markers)
@@ -229,31 +259,49 @@ Page({
             //设置导航状态为1
             navigating = 1;
             //===============
-            console.log("success", navigating)
+            console.log("success", navigating);
             var ret = res.data
             if (ret.status != 0) return; //服务异常处理
-            var coors = ret.result.routes[0].polyline,
-              pl = [];
+            var coors = ret.result.routes[0].polyline, pl = [];
             //坐标解压（返回的点串坐标，通过前向差分进行压缩）
             var kr = 1000000;
             for (var i = 2; i < coors.length; i++) {
               coors[i] = Number(coors[i - 2]) + Number(coors[i]) / kr;
             }
             //将解压后的坐标放入点串数组pl中
+            var minX = 180.0, minY = 90.0, maxX = -180.0, maxY = -90.0;
             for (var i = 0; i < coors.length; i += 2) {
               pl.push({
                 latitude: coors[i],
                 longitude: coors[i + 1]
               })
+              var latitude = Number(coors[i]);
+              var longitude = Number(coors[i + 1]);
+              // find four corners of navigationg route
+              if (latitude < minY)
+                minY = latitude;
+              if (latitude > maxY)
+                maxY = latitude;
+              if (longitude < minX)
+                minX = longitude;
+              if (longitude > maxX)
+                maxX = longitude;
             }
+            var recenterX = (minX + maxX) / 2.0;
+            var recenterY = (minY + maxY) / 2.0;
+            var recenterScale = that.calculateScale(maxX - minX, maxY - minY);
+
             //设置polyline属性，将路线显示出来
             that.setData({
               polyline: [{
                 points: pl,
-                color: '#FF0000DD',
-                width: 2
+                color: "#0091ff",
+                width: 6
               }],
               navigating: navigating,
+              longitude: recenterX,
+              latitude: recenterY,
+              scale: recenterScale, //recenterScale,
             })
           }
         };
@@ -264,6 +312,7 @@ Page({
       }
     })
   },
+
   quitNavigate: function() {
     var that = this;
     var thatScale = 0;
@@ -314,9 +363,9 @@ Page({
             return elem.id == destinationId;
           });
           tmp.push(des);
-          console.log("user", user)
-          console.log("des", des)
-          console.log("tmp", tmp);
+          //console.log("user", user)
+          //console.log("des", des)
+          //console.log("tmp", tmp);
           markersToShow = tmp;
         }
         //刷新用户位置并显示markers
@@ -331,13 +380,13 @@ Page({
             width: 50,
             height: 50
           });
-          console.log("user", user)
+          //console.log("user", user)
           //markersToShow = markersToShow.concat(user)
           that.setData({
             markersToShow: markersToShow
           })
         })
-      }, 2000
+      }, 2000 // every 2 seconds
     )
   },
   regionChange(e) { // either movement or zoom-in/out

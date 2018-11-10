@@ -5,7 +5,7 @@
 width: 360px;height :500px;
 -->
 
-<map id="myMap" longitude="{{longitude}}" latitude="{{latitude}}" markers="{{markersToShow}}" scale="16" show-location='true' polyline="{{polyline}}" bindregionchange="regionChange"  style="width: 100%;height: {{mapHeight}}vh;" bindmarkertap="click">
+<map id="myMap" longitude="{{longitude}}" latitude="{{latitude}}" markers="{{markersToShow}}" scale="{{scale}}" show-location='true' polyline="{{polyline}}" bindregionchange="regionChange"  style="width: 100%;height: {{mapHeight}}vh;" bindmarkertap="click">
   <cover-view class="controls">
     <cover-view class="search" bindtap="search">
       <cover-image class="img1" src="/picture/icon_search.png" />
