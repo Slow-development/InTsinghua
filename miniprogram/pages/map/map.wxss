@@ -1,0 +1,100 @@
+/* pages/map/map.wxss */
+.button1 {
+  top: 20rpx;
+  left: 30rpx;
+  font-size:100%;
+  width: 240rpx;
+  height: 70rpx;
+  color: #000;
+  line-height: 75rpx;
+  justify-content: center;
+  background-color: #fa88d8;
+  position: absolute;
+  text-align: center;
+}
+.controls {
+  position: relative;
+  top: 50%;
+  height: 80px;
+  margin-top: 0px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.search,.selfLocation{
+  flex: 1;
+  height: 100%;
+}
+
+.img1 {
+  width: 30px;
+  height: 30px;
+  margin: 0px auto;
+}
+
+.img2 {
+  width: 40px;
+  height: 40px;
+  margin: 0px auto;
+}
+
+.ctrl{
+  width: 100%;
+  height: 3vh;
+}
+
+.singleTab{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: 125rpx;
+}
+
+.dialog-longline {
+  width: 100%;
+  height: 2rpx;
+  background-color:darkgrey;
+}
+
+.tabLabel{
+  height: 80%;
+  width: 75%;
+  display: flex;
+  flex-direction: row;
+  align-content: center;
+}
+
+.tabImage{
+  width: 120rpx;
+  height: 100%;
+  align-content: center;
+}
+
+.tabText{
+  height: 100%;
+  width: 400rpx;
+  text-align: center;
+}
+
+.tabButton{
+  background: none;
+  color: #000;
+  width: 140rpx;
+  height: 80rpx;
+}
+
+.tabButton::after{
+  border: none;
+}
+
+.naviImage{
+  width: 100%;
+  height: 100%;
+}
+
+.white{
+  color: white
+}

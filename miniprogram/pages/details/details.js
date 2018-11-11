@@ -1,26 +1,39 @@
-// pages/index/index.js
-var app = getApp()
-Page({
+// pages/scenicSpotDetails/scenicSpotDetails.js
+//获取应用实例
+const app = getApp()
 
+Page({
   /**
    * 页面的初始数据
    */
   data: {
-  
+    imgSrc: "",
+    textInfo: "",
+    url: "",
+    scenicSpotName: "",
+    index: -1,
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-  
+    var index = options.index
+    if (app.globalData.site) {
+      this.setData({
+        imgSrc: app.globalData.site[index].img_id,
+        textInfo: app.globalData.site[index].introduction,
+        scenicSpotName: app.globalData.site[index].name,
+        index: options.index,
+      })
+    }
   },
 
   /**
    * 生命周期函数--监听页面初次渲染完成
    */
   onReady: function () {
-  
+
   },
 
   /**
@@ -64,9 +77,13 @@ Page({
   onShareAppMessage: function () {
 
   },
-  goToMap: function (param) {
+
+  /**
+   * 跳转导航页面
+   */
+  jumpNavigationPage: function () {
     wx.navigateTo({
-      url: '/pages/map/map',
+      url: '/pages/map/map?id=' + this.data.index,
     })
   }
 })

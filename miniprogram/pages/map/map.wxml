@@ -1,0 +1,35 @@
+<!--pages/map/map.wxml-->
+<!--<map id = "myMap" class = "map" scale= "12" bindregionchange="regionChange" longitude="{{longitude}}" latitude="{{latitude}}"  style="width:{{map_width}}px;height:{{map_height}}px ;margin:0px;" markers="{{markers}}" bindmarkertap="navigateToHere" polyline="{{polyline}}" show-location>
+<cover-view class = "button1" bindtap="quitNavigate">退出导航</cover-view></map>
+<!--longitude = "116.32" latitude = "40.005"
+width: 360px;height :500px;
+-->
+
+<map id="myMap" longitude="{{longitude}}" latitude="{{latitude}}" markers="{{markersToShow}}" scale="{{scale}}" show-location='true' polyline="{{polyline}}" bindregionchange="regionChange"  style="width: 100%;height: {{mapHeight}}vh;" bindmarkertap="click">
+  <cover-view class="controls">
+    <cover-view class="search" bindtap="search">
+      <cover-image class="img1" src="/picture/icon_search.png" />
+    </cover-view>
+    <cover-view class="selfLocation" bindtap="selfLocation">
+      <cover-image class="img2" src="/picture/icon_location.png" />
+    </cover-view>
+  </cover-view>
+  <cover-view class="button1" bindtap="quitNavigate" wx:if="{{navigating==1}}">退出导航</cover-view>
+</map>
+
+<view>
+  <button class='ctrl' bindtap='ctrlScroll'></button>
+  <scroll-view scroll-y="true" style="height: {{scrollHeight}}vh" scroll-into-view="{{toView}}" scroll-with-animation='true' white-space='nowrap'>
+    <view id="m{{item.id}}" class="singleTab" wx:for="{{markersToShow}}" wx:key="{{index}}">
+      <button id="{{item.id}}" hidden="true" bindtap="goToDetails"></button>
+      <label for='{{item.id}}' class="tabLabel">
+        <text class='white'>" " </text>
+        <image class="tabImage" src="{{item.imageUrl}}"></image>
+        <text class='tabText'>{{item.title}}</text>
+      </label>
+      <button id='{{item.id}}' class='tabButton' bindtap='navigateToHere'>
+        <image class="naviImage" src="/picture/icon_navigate.png"></image>
+      </button>
+    </view>
+  </scroll-view>
+</view>

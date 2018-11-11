@@ -1,0 +1,21 @@
+<!--pages/scenicSpotDetails/scenicSpotDetails.wxml-->
+<view id="scenicSpotDetails">
+  <view id="scenicSpotImage">
+    <image src="{{imgSrc}}" style='width:750rpx'></image>
+  </view>
+  <view class="horizon">
+    <view id="scenicSpotName">
+      {{scenicSpotName}}
+    </view>
+    <view id="navigator">
+      <view id="navigateIcon">
+      <button id="button" hidden="true" bindtap="jumpNavigationPage"></button>
+      <label for='button'>        <image class="naviImage" src="/picture/icon_navigate.png"></image></label>
+      
+      </view>
+    </view>
+  </view>
+  <view id="textInfo">
+    <text>{{textInfo}}</text>
+  </view>
+</view>
