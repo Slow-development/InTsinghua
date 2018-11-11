@@ -8,9 +8,7 @@ var user = []
 // markers to show
 var markersToShow = []
 // all markers set 
-var markers =  []
-//state of navigate
-var navigating = 0
+var markers = []
 //initial destinationId
 var destinationId = -1
 Page({
@@ -26,18 +24,29 @@ Page({
     toView: '',
     //cloud imgUrl
     imgSmallUrl: "",
-    navigating: 0,
     scale: 16,
+    //state of navigate
+    navigating: 0,
   },
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad: function() {
+  onLoad: function(e) {
+    if (e.id) {
+      destinationId = parseInt(e.id)
+    } else {
+      destinationId = -1
+    }
+    
+    //console.log(destinationId, e)
     var that = this;
     //利用云函数初始化markers
-    that.markersInit();
-    that.scale = 16;
-
+    that.markersInit()
+    this.setData({
+      scale: 16,
+      navigating: 0,
+    })
+    console.log("scale",this.data.scale)
     //实例化API
     qqmapsdk = new QQMapWX({
       key: 'AT7BZ-UHBW2-7TYUQ-C2JGU-YDKVE-IWBA5'
@@ -50,23 +59,29 @@ Page({
         latitude: locationInfo.latitude,
       })
     });
-
+    if (that.data.navigating == 0 && destinationId != -1) {
+      //设置导航状态为1
+      this.setData({
+        navigating: 1,
+      }),
+      that.navigateBase(destinationId)
+    }
     //set the width and height
     // 动态设置map的宽和高
     wx.getSystemInfo({
-        success: function(res) {
-          // console.log('getSystemInfo');
-          // console.log(res.windowWidth);
-          that.setData({
-            map_width: res.windowWidth,
-            map_height: res.windowHeight,
+      success: function(res) {
+        // console.log('getSystemInfo');
+        // console.log(res.windowWidth);
+        that.setData({
+          map_width: res.windowWidth,
+          map_height: res.windowHeight,
 
-          })
-        }
-      });
+        })
+      }
+    });
 
-      //定时器函数
-      that.timing();
+    //定时器函数
+    that.timing();
   },
 
   /**
@@ -80,7 +95,7 @@ Page({
     //初始化markerToShow
     that.mapCtx.getScale({
       success: function(res) {
-        console.log(res.scale);
+        //console.log(res.scale);
         //在这里计算显示哪些markers（或者再查询一下scale，再决定显示哪些markers）
         thatScale = res.scale;
         //define： scale < 12   choose school  
@@ -94,7 +109,7 @@ Page({
           var tmp = markers.filter(function(item, index, array) {
             return item.id < (thatScale - 11) * 100; // 取得满足id条件的
           });
-          console.log(tmp);
+          //console.log(tmp);
           markersToShow = tmp;
         }
       }
@@ -143,32 +158,32 @@ Page({
 
   },
   //navigate to Page search
-  search: function () {
+  search: function() {
     wx.navigateTo({
       url: '../search/search'
     })
   },
   //navigate to details
-  goToDetails: function (e) {
+  goToDetails: function(e) {
     console.log(e)
     wx.navigateTo({
-      url: '../details/details'
+      url: '../details/details?index='+e.currentTarget.id
     })
   },
   //find Self-location
-  selfLocation: function () {
+  selfLocation: function() {
     this.mapCtx.moveToLocation();
   },
   //button tab change to item clicked
-  click: function (e) {
-    console.log(e)
+  click: function(e) {
+    //console.log(e)
     this.setData({
       toView: 'm' + e.markerId,
     })
   },
 
   //change the size of button tab
-  ctrlScroll: function (e) {
+  ctrlScroll: function(e) {
     if (this.data.mapHeight == 70) {
       this.setData({
         mapHeight: 97,
@@ -183,12 +198,12 @@ Page({
   },
 
   markersInit: function() {
-    app.globalData.site.forEach(function(item,index) {
+    app.globalData.site.forEach(function(item, index) {
       wx.cloud.downloadFile({
         fileID: item.img_small_id,
         success: res => {
           // get temp file path
-          console.log(res.tempFilePath)
+          //console.log(res.tempFilePath)
           markers[index].imageUrl = res.tempFilePath
         },
         fail: err => {
@@ -232,44 +247,47 @@ Page({
     return scale;
   },
 
-  navigateToHere: function(e) {
-    var that = this;
-    destinationId = e.currentTarget.id
-    console.log(e.currentTarget.id)
-    console.log("markers", markers)
-    //获得这个地点的Array值
+  navigateBase: function(id) {
+    var that = this
     var des = markers.find(function(elem) {
-      return elem.id == e.currentTarget.id;
+      return elem.id == id;
     });
-    var self = user.find(function(elem) {
-      return elem.id == 0;
-    });
-    console.log("des", des);
+    var longitude = 0;
+    var latitude = 0
+    app.getLocationInfo(function (locationInfo) {
+      //console.log('map', locationInfo);
+      longitude = locationInfo.longitude;
+      latitude = locationInfo.latitude;
+    })
+    console.log(latitude, longitude)
+    //console.log("des", des);
     wx.showActionSheet({
       itemList: ["导航"],
       success: function(res) {
         //console.log(res.tapIndex)
         var opt = {
           //WebService请求地址，from为起点坐标，to为终点坐标，开发key为必填
-          url: 'https://apis.map.qq.com/ws/direction/v1/walking/?from=' + self.latitude + ',' + self.longitude + '&to=' + des.latitude + ',' + des.longitude + '&key=AT7BZ-UHBW2-7TYUQ-C2JGU-YDKVE-IWBA5',
+          url: 'https://apis.map.qq.com/ws/direction/v1/walking/?from=' + latitude + ',' + longitude + '&to=' + des.latitude + ',' + des.longitude + '&key=AT7BZ-UHBW2-7TYUQ-C2JGU-YDKVE-IWBA5',
           method: 'GET',
           dataType: 'json',
           //请求成功回调
           success: function(res) {
-            //设置导航状态为1
-            navigating = 1;
             //===============
-            console.log("success", navigating);
+            console.log("success", that.data.navigating);
             var ret = res.data
             if (ret.status != 0) return; //服务异常处理
-            var coors = ret.result.routes[0].polyline, pl = [];
+            var coors = ret.result.routes[0].polyline,
+              pl = [];
             //坐标解压（返回的点串坐标，通过前向差分进行压缩）
             var kr = 1000000;
             for (var i = 2; i < coors.length; i++) {
               coors[i] = Number(coors[i - 2]) + Number(coors[i]) / kr;
             }
             //将解压后的坐标放入点串数组pl中
-            var minX = 180.0, minY = 90.0, maxX = -180.0, maxY = -90.0;
+            var minX = 180.0,
+              minY = 90.0,
+              maxX = -180.0,
+              maxY = -90.0;
             for (var i = 0; i < coors.length; i += 2) {
               pl.push({
                 latitude: coors[i],
@@ -298,7 +316,6 @@ Page({
                 color: "#0091ff",
                 width: 6
               }],
-              navigating: navigating,
               longitude: recenterX,
               latitude: recenterY,
               scale: recenterScale, //recenterScale,
@@ -308,23 +325,35 @@ Page({
         wx.request(opt);
       },
       fail: function(res) {
-        console.log(res.errMsg)
+        //console.log(res.errMsg)
       }
     })
+    console.log("navigating at Base:fun last",that.navigating)
+  },
+  navigateToHere: function(e) {
+    var that = this;
+    destinationId = e.currentTarget.id
+    //设置导航状态为1
+    this.setData({
+      navigating: 1,
+    });
+    //console.log(e.currentTarget.id)
+    //console.log("markers", markers)
+    that.navigateBase(destinationId)
   },
 
   quitNavigate: function() {
     var that = this;
     var thatScale = 0;
-    navigating = 0;
+    destinationId = -1;
     that.setData({
       polyline: [],
-      navigating: navigating,
+      navigating: 0,
     })
-    console.log("navigating", navigating)
+    //console.log("navigating", navigating)
     that.mapCtx.getScale({
       success: function(res) {
-        console.log(res.scale);
+        //console.log(res.scale);
         //在这里计算显示哪些markers（或者再查询一下scale，再决定显示哪些markers）
         thatScale = res.scale;
         //define： scale < 12   choose school  
@@ -338,7 +367,7 @@ Page({
           var tmp = markers.filter(function(item, index, array) {
             return item.id < (thatScale - 11) * 100; // 取得满足id条件的
           });
-          console.log(tmp);
+          //console.log(tmp);
           markersToShow = tmp;
         }
 
@@ -349,8 +378,26 @@ Page({
     var that = this
     var time = setInterval(
       function() {
+        //刷新用户位置并显示markers
+        app.getLocationInfo(function (locationInfo) {
+          //console.log('map', locationInfo);
+          user = [];
+          user.push({
+            id: 0,
+            iconPath: "/picture/icon_location.png",
+            longitude: locationInfo.longitude,
+            latitude: locationInfo.latitude,
+            width: 50,
+            height: 50
+          });
+          //console.log("user", user)
+          //markersToShow = markersToShow.concat(user)
+          that.setData({
+            markersToShow: markersToShow
+          })
+        })
         //如果是导航状态那么只显示身边周围的景点
-        if (navigating == 1) {
+        if (that.data.navigating == 1) {
           //自身位置
           var self = user.find(function(elem) {
             return elem.id == 0;
@@ -368,24 +415,7 @@ Page({
           //console.log("tmp", tmp);
           markersToShow = tmp;
         }
-        //刷新用户位置并显示markers
-        app.getLocationInfo(function(locationInfo) {
-          //console.log('map', locationInfo);
-          user = [];
-          user.push({
-            id: 0,
-            iconPath: "/picture/icon_location.png",
-            longitude: locationInfo.longitude,
-            latitude: locationInfo.latitude,
-            width: 50,
-            height: 50
-          });
-          //console.log("user", user)
-          //markersToShow = markersToShow.concat(user)
-          that.setData({
-            markersToShow: markersToShow
-          })
-        })
+        
       }, 2000 // every 2 seconds
     )
   },
@@ -393,7 +423,7 @@ Page({
     var that = this;
     var thatScale = 0;
     //console.log(e);
-    if (e.type == "end" && navigating == 0) {
+    if (e.type == "end" && that.data.navigating == 0) {
       markersToShow = [];
       that.mapCtx.getScale({
         success: function(res) {
@@ -411,7 +441,7 @@ Page({
             var tmp = markers.filter(function(item, index, array) {
               return item.id < (thatScale - 11) * 100; // 取得满足id条件的
             });
-            console.log(tmp);
+            //console.log(tmp);
             markersToShow = tmp;
           }
 
