@@ -63,9 +63,4 @@ Page({
   onShareAppMessage: function () {
 
   },
-  goToMap: function (param) {
-    wx.navigateTo({
-      url: '/pages/map/map?id='+2,
-    })
-  }
 })
