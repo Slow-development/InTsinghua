@@ -1,12 +1,17 @@
 {
-  "pages":[
+  "pages": [
+    "pages/search/search",
+    
     "pages/index/index",
-    "pages/logs/logs"
+    "pages/map/map",
+    
+    "pages/details/details"
   ],
-  "window":{
-    "backgroundTextStyle":"light",
-    "navigationBarBackgroundColor": "#fff",
-    "navigationBarTitleText": "WeChat",
-    "navigationBarTextStyle":"black"
-  }
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#743477",
+    "navigationBarTitleText": "InTsinghua",
+    "navigationBarTextStyle": "white"
+  },
+  "functionPages": true
 }
