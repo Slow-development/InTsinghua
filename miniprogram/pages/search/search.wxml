@@ -1,0 +1,16 @@
+<!--pages/search/search.wxml-->
+<view class="search">
+  <input class="search_arr" placeholder="请输入地点" bindinput="bindKeyInput" type="text" ></input>
+</view>
+<view id="m{{item.index}}" class="singleTab" wx:for="{{result}}" wx:key="{{index}}">
+  <button id="{{item.index}}" hidden="true" bindtap="jumpDetails"></button>
+  <label for='{{item.index}}' class="tabLabel">
+    <text class='white'>" " </text>
+    <image class="tabImage" src="{{item.img_small_id}}"></image>
+    <text class='tabText'>{{item.name}}</text>
+  </label>
+  <button id='{{item.index}}' class='tabButton' bindtap='jumpMap'>
+    <image class="naviImage" src="/picture/icon_navigate.png"></image>
+  </button>
+</view>
+
