@@ -10,10 +10,10 @@ Page({
     result: []
   },
   bindKeyInput: function (e) {
-    console.log(e);
+    // console.log(e);
     this.search(e.detail.value)
     this.data.bindKeyInput = e.detail.value;
-    console.log(this.data.bindKeyInput);
+    // console.log(this.data.bindKeyInput);
   },
   search: function (key) {
     var site = app.globalData.site;
@@ -92,7 +92,7 @@ Page({
 
   },
   jumpDetails: function (e) {
-    console.log(e.currentTarget.id);
+    // console.log(e.currentTarget.id);
     wx.navigateTo({
       url: '../details/details?index=' + e.currentTarget.id,
     })
