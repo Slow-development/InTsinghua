@@ -389,7 +389,6 @@ Page({
 
   updateUserLocation: function() {
     var that = this;
-    console.log("FUCK!");
     // refresh user location, show nearby markers
     app.getLocationInfo(function (locationInfo) {
       //console.log('map', locationInfo);
