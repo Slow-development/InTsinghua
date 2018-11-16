@@ -27,6 +27,8 @@ Page({
     scale: 16,
     //state of navigate
     navigating: 0,
+    // the timer that is running, a function
+    timer: "",
   },
   /**
    * 生命周期函数--监听页面加载
@@ -37,15 +39,15 @@ Page({
     } else {
       destinationId = -1
     }
-    
-    //console.log(destinationId, e)
+    //console.log("DEST ", destinationId, e)
     var that = this;
     //利用云函数初始化markers
     that.markersInit()
-    this.setData({
+    that.setData({
       scale: 16,
       navigating: 0,
     })
+    console.log(markersToShow);
     console.log("scale",this.data.scale)
     //实例化API
     qqmapsdk = new QQMapWX({
@@ -63,7 +65,7 @@ Page({
       //设置导航状态为1
       this.setData({
         navigating: 1,
-      }),
+      })
       that.navigateBase(destinationId)
     }
     //set the width and height
@@ -75,13 +77,12 @@ Page({
         that.setData({
           map_width: res.windowWidth,
           map_height: res.windowHeight,
-
         })
       }
     });
 
     //定时器函数
-    that.timing();
+    that.startTiming();
   },
 
   /**
@@ -127,14 +128,15 @@ Page({
    * 生命周期函数--监听页面隐藏
    */
   onHide: function() {
-
   },
 
   /**
    * 生命周期函数--监听页面卸载
    */
   onUnload: function() {
-
+    var that = this;
+    // that.quitNavigate();
+    clearInterval(that.data.timer);
   },
 
   /**
@@ -264,6 +266,10 @@ Page({
     wx.showActionSheet({
       itemList: ["导航"],
       success: function(res) {
+        //设置导航状态为1
+        that.setData({
+          navigating: 1,
+        });
         //console.log(res.tapIndex)
         var opt = {
           //WebService请求地址，from为起点坐标，to为终点坐标，开发key为必填
@@ -328,15 +334,11 @@ Page({
         //console.log(res.errMsg)
       }
     })
-    console.log("navigating at Base:fun last",that.navigating)
+    console.log("navigating at Base:fun last",that.data.navigating)
   },
   navigateToHere: function(e) {
     var that = this;
     destinationId = e.currentTarget.id
-    //设置导航状态为1
-    this.setData({
-      navigating: 1,
-    });
     //console.log(e.currentTarget.id)
     //console.log("markers", markers)
     that.navigateBase(destinationId)
@@ -374,51 +376,59 @@ Page({
       }
     })
   },
-  timing: function() {
-    var that = this
-    var time = setInterval(
-      function() {
-        //刷新用户位置并显示markers
-        app.getLocationInfo(function (locationInfo) {
-          //console.log('map', locationInfo);
-          user = [];
-          user.push({
-            id: 0,
-            iconPath: "/picture/icon_location.png",
-            longitude: locationInfo.longitude,
-            latitude: locationInfo.latitude,
-            width: 50,
-            height: 50
-          });
-          //console.log("user", user)
-          //markersToShow = markersToShow.concat(user)
-          that.setData({
-            markersToShow: markersToShow
-          })
-        })
-        //如果是导航状态那么只显示身边周围的景点
-        if (that.data.navigating == 1) {
-          //自身位置
-          var self = user.find(function(elem) {
-            return elem.id == 0;
-          });
-          //身边东西的位置
-          var tmp = markers.filter(function(item, index, array) {
-            return (Math.abs(item.latitude - self.latitude + item.longitude - self.longitude) < 0.0002); // 取得满足id条件的
-          });
-          var des = markers.find(function(elem) {
-            return elem.id == destinationId;
-          });
-          tmp.push(des);
-          //console.log("user", user)
-          //console.log("des", des)
-          //console.log("tmp", tmp);
-          markersToShow = tmp;
-        }
-        
-      }, 2000 // every 2 seconds
-    )
+
+  startTiming: function() {
+    var that = this;
+    // clear pre-existent timer!
+    clearInterval(that.data.timer);
+    var timer = setInterval(that.updateUserLocation, 2000);
+    that.setData({
+      timer: timer,
+    });
   },
+
+  updateUserLocation: function() {
+    var that = this;
+    console.log("FUCK!");
+    // refresh user location, show nearby markers
+    app.getLocationInfo(function (locationInfo) {
+      //console.log('map', locationInfo);
+      user = [];
+      user.push({
+        id: 0,
+        iconPath: "/picture/icon_location.png",
+        longitude: locationInfo.longitude,
+        latitude: locationInfo.latitude,
+        width: 50,
+        height: 50
+      });
+      //console.log("user", user)
+      //markersToShow = markersToShow.concat(user)
+      that.setData({
+        markersToShow: markersToShow
+      })
+    })
+    //如果是导航状态那么只显示身边周围的景点
+    if (that.data.navigating == 1) {
+      //自身位置
+      var self = user.find(function(elem) {
+        return elem.id == 0;
+      });
+      //身边东西的位置
+      var tmp = markers.filter(function(item, index, array) {
+        return (Math.abs(item.latitude - self.latitude + item.longitude - self.longitude) < 0.0002); // 取得满足id条件的
+      });
+      var des = markers.find(function(elem) {
+        return elem.id == destinationId;
+      });
+      tmp.push(des);
+      //console.log("user", user)
+      //console.log("des", des)
+      //console.log("tmp", tmp);
+      markersToShow = tmp;
+    }
+  },
+
   regionChange(e) { // either movement or zoom-in/out
     var that = this;
     var thatScale = 0;
