@@ -1,16 +1,12 @@
 // pages/map/map.js
-const app = getApp()
-var QQMapWX = require('../../utils/qqmap-wx-jssdk.js')
-var qqmapsdk
-var markers = []
+const app = getApp();
+var QQMapWX = require('../../utils/qqmap-wx-jssdk.js');
+var qqmapsdk;
 //user position
-var user = []
-// markers to show
-var markersToShow = []
+var user = [];
 // all markers set 
-var markers = []
-//initial destinationId
-var destinationId = -1
+var markers = [];
+
 Page({
   /**
    * 页面的初始数据
@@ -27,22 +23,30 @@ Page({
     scale: 16,
     //state of navigate
     navigating: 0,
+    // the timer that is running, a function
+    timer: "",
+    destinationID: -1,
   },
+
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function(e) {
-    if (e.id) {
-      destinationId = parseInt(e.id)
-    } else {
-      destinationId = -1
-    }
-    
-    //console.log(destinationId, e)
     var that = this;
+    // determine if the page is being navigated to by search page
+    if (e.id) {
+      that.setData({
+        destinationId: parseInt(e.id),
+      });
+    } else {
+      that.setData({
+        destinationId: -1,
+      });
+    }
+    //console.log("DEST ", destinationId, e)
     //利用云函数初始化markers
     that.markersInit()
-    this.setData({
+    that.setData({
       scale: 16,
       navigating: 0,
     })
@@ -59,12 +63,8 @@ Page({
         latitude: locationInfo.latitude,
       })
     });
-    if (that.data.navigating == 0 && destinationId != -1) {
-      //设置导航状态为1
-      this.setData({
-        navigating: 1,
-      }),
-      that.navigateBase(destinationId)
+    if (that.data.navigating == 0 && that.data.destinationId != -1) {
+      that.navigateBase(that.data.destinationId)
     }
     //set the width and height
     // 动态设置map的宽和高
@@ -75,22 +75,21 @@ Page({
         that.setData({
           map_width: res.windowWidth,
           map_height: res.windowHeight,
-
         })
       }
     });
 
     //定时器函数
-    that.timing();
+    that.startTiming();
   },
 
   /**
    * 生命周期函数--监听页面初次渲染完成
    */
   onReady: function() {
-    //使用wx.createMapContext 获取map上下文
-    this.mapCtx = wx.createMapContext('myMap')
     var that = this;
+    //使用wx.createMapContext 获取map上下文
+    that.mapCtx = wx.createMapContext('myMap')
     var thatScale = 0;
     //初始化markerToShow
     that.mapCtx.getScale({
@@ -104,13 +103,17 @@ Page({
           var tmp = markers.filter(function(item, index, array) {
             return item.id > 1000; // 取得满足id条件的
           });
-          markersToShow = tmp;
+          that.setData({
+            markersToShow: tmp
+          })
         } else {
           var tmp = markers.filter(function(item, index, array) {
             return item.id < (thatScale - 11) * 100; // 取得满足id条件的
           });
           //console.log(tmp);
-          markersToShow = tmp;
+          that.setData({
+            markersToShow: tmp
+          })
         }
       }
     })
@@ -120,21 +123,26 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow: function() {
-
+    var that = this;
+    that.startTiming;
   },
 
   /**
    * 生命周期函数--监听页面隐藏
    */
   onHide: function() {
-
+    var that = this;
+    //that.quitNavigate();
+    clearInterval(that.data.timer);
   },
 
   /**
    * 生命周期函数--监听页面卸载
    */
   onUnload: function() {
-
+    var that = this;
+    that.quitNavigate();
+    clearInterval(that.data.timer);
   },
 
   /**
@@ -253,7 +261,7 @@ Page({
       return elem.id == id;
     });
     var longitude = 0;
-    var latitude = 0
+    var latitude = 0;
     app.getLocationInfo(function (locationInfo) {
       //console.log('map', locationInfo);
       longitude = locationInfo.longitude;
@@ -264,6 +272,10 @@ Page({
     wx.showActionSheet({
       itemList: ["导航"],
       success: function(res) {
+        //设置导航状态为1
+        that.setData({
+          navigating: 1,
+        });
         //console.log(res.tapIndex)
         var opt = {
           //WebService请求地址，from为起点坐标，to为终点坐标，开发key为必填
@@ -328,103 +340,126 @@ Page({
         //console.log(res.errMsg)
       }
     })
-    console.log("navigating at Base:fun last",that.navigating)
+    console.log("navigating at Base:fun last",that.data.navigating)
   },
+
   navigateToHere: function(e) {
     var that = this;
-    destinationId = e.currentTarget.id
-    //设置导航状态为1
-    this.setData({
-      navigating: 1,
+    that.setData({
+      destinationId: e.currentTarget.id,
     });
     //console.log(e.currentTarget.id)
     //console.log("markers", markers)
-    that.navigateBase(destinationId)
+    that.navigateBase(that.data.destinationId)
+  },
+  
+  // only set location in the middle, do not navigate!
+  goToHere: function (e) {
+    var that = this;
+    var des = markers.find(function (elem) {
+      return elem.id == e.currentTarget.id;
+    });
+    that.setData({
+      longitude: des.longitude,
+      latitude: des.latitude,
+      scale: 20,
+    });
   },
 
   quitNavigate: function() {
     var that = this;
     var thatScale = 0;
-    destinationId = -1;
+    that.data.destinationId = -1;
     that.setData({
       polyline: [],
       navigating: 0,
     })
-    //console.log("navigating", navigating)
+    console.log("failure!", that.mapCtx);
     that.mapCtx.getScale({
       success: function(res) {
-        //console.log(res.scale);
+        console.log("success!", res.scale);
         //在这里计算显示哪些markers（或者再查询一下scale，再决定显示哪些markers）
         thatScale = res.scale;
         //define： scale < 12   choose school  
         //define: scale = n >= 12  markers_id < (n-11)*10
         if (thatScale < 12) {
           var tmp = markers.filter(function(item, index, array) {
-            return item.id > 1000; // 取得满足id条件的
+            return item.id > 1000 // 取得满足id条件的
           });
-          markersToShow = tmp;
+          console.log(tmp);
+          that.setData({
+            markersToShow: tmp
+          })
         } else {
           var tmp = markers.filter(function(item, index, array) {
             return item.id < (thatScale - 11) * 100; // 取得满足id条件的
           });
-          //console.log(tmp);
-          markersToShow = tmp;
+          console.log(tmp);
+          that.setData({
+            markersToShow: tmp
+          })
         }
 
       }
     })
   },
-  timing: function() {
-    var that = this
-    var time = setInterval(
-      function() {
-        //刷新用户位置并显示markers
-        app.getLocationInfo(function (locationInfo) {
-          //console.log('map', locationInfo);
-          user = [];
-          user.push({
-            id: 0,
-            iconPath: "/picture/icon_location.png",
-            longitude: locationInfo.longitude,
-            latitude: locationInfo.latitude,
-            width: 50,
-            height: 50
-          });
-          //console.log("user", user)
-          //markersToShow = markersToShow.concat(user)
-          that.setData({
-            markersToShow: markersToShow
-          })
-        })
-        //如果是导航状态那么只显示身边周围的景点
-        if (that.data.navigating == 1) {
-          //自身位置
-          var self = user.find(function(elem) {
-            return elem.id == 0;
-          });
-          //身边东西的位置
-          var tmp = markers.filter(function(item, index, array) {
-            return (Math.abs(item.latitude - self.latitude + item.longitude - self.longitude) < 0.0002); // 取得满足id条件的
-          });
-          var des = markers.find(function(elem) {
-            return elem.id == destinationId;
-          });
-          tmp.push(des);
-          //console.log("user", user)
-          //console.log("des", des)
-          //console.log("tmp", tmp);
-          markersToShow = tmp;
-        }
-        
-      }, 2000 // every 2 seconds
-    )
+
+  startTiming: function() {
+    var that = this;
+    // clear pre-existent timer!
+    clearInterval(that.data.timer);
+    var timer = setInterval(that.updateUserLocation, 2000);
+    that.setData({
+      timer: timer,
+    });
   },
+
+  updateUserLocation: function() {
+    var that = this;
+    console.log("timer running!", that.data.markersToShow);
+    // refresh user location, show nearby markers
+    app.getLocationInfo(function (locationInfo) {
+      //console.log('map', locationInfo);
+      user = [];
+      user.push({
+        id: 0,
+        iconPath: "/picture/icon_location.png",
+        longitude: locationInfo.longitude,
+        latitude: locationInfo.latitude,
+        width: 50,
+        height: 50
+      });
+      //console.log("user", user)
+      //markersToShow = markersToShow.concat(user)
+    })
+    //如果是导航状态那么只显示身边周围的景点
+    if (that.data.navigating == 1) {
+      //自身位置
+      var self = user.find(function(elem) {
+        return elem.id == 0;
+      });
+      //身边东西的位置
+      var tmp = markers.filter(function(item, index, array) {
+        return (Math.abs(item.latitude - self.latitude + item.longitude - self.longitude) < 0.0002); // 取得满足id条件的
+      });
+      var des = markers.find(function(elem) {
+        return elem.id == that.data.destinationId;
+      });
+      tmp.push(des);
+      //console.log("user", user)
+      //console.log("des", des)
+      //console.log("tmp", tmp);
+      that.setData({
+        markersToShow: tmp
+      })
+    }
+  },
+
   regionChange(e) { // either movement or zoom-in/out
     var that = this;
     var thatScale = 0;
     //console.log(e);
     if (e.type == "end" && that.data.navigating == 0) {
-      markersToShow = [];
       that.mapCtx.getScale({
         success: function(res) {
           console.log(res.scale);
@@ -436,13 +471,17 @@ Page({
             var tmp = markers.filter(function(item, index, array) {
               return item.id > 1000; // 取得满足id条件的
             });
-            markersToShow = tmp;
+            that.setData({
+              markersToShow: tmp
+            })
           } else {
             var tmp = markers.filter(function(item, index, array) {
               return item.id < (thatScale - 11) * 100; // 取得满足id条件的
             });
             //console.log(tmp);
-            markersToShow = tmp;
+            that.setData({
+              markersToShow: tmp
+            })
           }
 
         }

@@ -74,9 +74,11 @@
 }
 
 .tabText{
+  display: flex;
   height: 100%;
-  width: 400rpx;
-  text-align: center;
+  width: 300rpx;
+  justify-content: center;
+  align-items: center;
 }
 
 .tabButton{
@@ -91,8 +93,8 @@
 }
 
 .naviImage{
-  width: 100%;
-  height: 100%;
+  width: 80%;
+  height: 80%;
 }
 
 .white{

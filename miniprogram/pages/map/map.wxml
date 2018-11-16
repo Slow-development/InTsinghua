@@ -27,6 +27,9 @@ width: 360px;height :500px;
         <image class="tabImage" src="{{item.imageUrl}}"></image>
         <text class='tabText'>{{item.title}}</text>
       </label>
+      <button id='{{item.id}}' class='tabButton' bindtap='goToHere'>
+        <image class="naviImage" src="/picture/icon_location.png"></image>
+      </button>
       <button id='{{item.id}}' class='tabButton' bindtap='navigateToHere'>
         <image class="naviImage" src="/picture/icon_navigate.png"></image>
       </button>
