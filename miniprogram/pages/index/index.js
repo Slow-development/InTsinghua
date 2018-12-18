@@ -1,5 +1,5 @@
 // pages/index/index.js
-var app = getApp()
+const app = getApp()
 Page({
 
   /**
@@ -72,9 +72,14 @@ Page({
   },
 
   goToQuestion: function (param) {
-    wx.navigateTo({
-      url: '/pages/question/question',
-    })
-  },
-
+    if (app.globalData.answer == null) {
+      wx.navigateTo({
+        url: '/pages/question/question',
+      })
+    } else {
+      wx.navigateTo({
+        url: '/pages/map/map',
+      })
+    }
+  }
 })
