@@ -223,10 +223,12 @@ Page({
         longitude: item.location.longitude,
         latitude: item.location.latitude,
         title: item.name,
+        scale: item.showlevel,
         iconPath: "/picture/icon_scene.png",
         height: 50,
         width: 40
       }
+     // console.log("markers",markers)
     })
   },
 
@@ -380,23 +382,42 @@ Page({
         console.log("success!", res.scale);
         //在这里计算显示哪些markers（或者再查询一下scale，再决定显示哪些markers）
         thatScale = res.scale;
-        //define： scale < 12   choose school  
-        //define: scale = n >= 12  markers_id < (n-11)*10
         if (thatScale < 12) {
-          var tmp = markers.filter(function(item, index, array) {
-            return item.id > 1000 // 取得满足id条件的
+          var tmp = markers.filter(function (item, index, array) {
+            return item.scale == 1; // 取得满足id条件的
           });
-          console.log(tmp);
           that.setData({
             markersToShow: tmp
           })
-        } else {
-          var tmp = markers.filter(function(item, index, array) {
-            return item.id < (thatScale - 11) * 100; // 取得满足id条件的
+        }
+        else if (thatScale < 14) {
+          var tmp = markers.filter(function (item, index, array) {
+            return item.scale <= 2; // 取得满足id条件的
           });
-          console.log(tmp);
           that.setData({
             markersToShow: tmp
+          })
+        }
+        else if (thatScale < 15) {
+          var tmp = markers.filter(function (item, index, array) {
+            return item.scale <= 3; // 取得满足id条件的
+          });
+          that.setData({
+            markersToShow: tmp
+          })
+        }
+        else if (thatScale < 17) {
+          var tmp = markers.filter(function (item, index, array) {
+            return item.scale <= 4; // 取得满足id条件的
+          });
+          that.setData({
+            markersToShow: tmp
+          })
+        }
+        else {
+          //console.log(tmp);
+          that.setData({
+            markersToShow: markers
           })
         }
 
@@ -416,7 +437,7 @@ Page({
 
   updateUserLocation: function() {
     var that = this;
-    console.log("timer running!", that.data.markersToShow);
+   // console.log("timer running!", that.data.markersToShow);
     // refresh user location, show nearby markers
     app.getLocationInfo(function (locationInfo) {
       //console.log('map', locationInfo);
@@ -459,7 +480,7 @@ Page({
     var that = this;
     var thatScale = 0;
     //console.log(e);
-    if (e.type == "end" && that.data.navigating == 0) {
+    if (e.type == "end" && that.data.navigating == 0 && !that.recommedSite) {
       that.mapCtx.getScale({
         success: function(res) {
           console.log(res.scale);
@@ -469,18 +490,44 @@ Page({
           //define: scale = n >= 12  markers_id < (n-11)*10
           if (thatScale < 12) {
             var tmp = markers.filter(function(item, index, array) {
-              return item.id > 1000; // 取得满足id条件的
+              return item.scale == 1; // 取得满足id条件的
             });
             that.setData({
               markersToShow: tmp
             })
-          } else {
-            var tmp = markers.filter(function(item, index, array) {
-              return item.id < (thatScale - 11) * 100; // 取得满足id条件的
+          } 
+          else if(thatScale < 14)
+          {
+            var tmp = markers.filter(function (item, index, array) {
+              return item.scale <= 2; // 取得满足id条件的
             });
-            //console.log(tmp);
             that.setData({
               markersToShow: tmp
+            })
+          } 
+          else if(thatScale <15)
+          {
+            var tmp = markers.filter(function (item, index, array) {
+              return item.scale <= 3; // 取得满足id条件的
+            });
+            that.setData({
+              markersToShow: tmp
+            })
+          } 
+          else if(thatScale <17)
+          {
+            var tmp = markers.filter(function (item, index, array) {
+              return item.scale <= 4; // 取得满足id条件的
+            });
+            that.setData({
+              markersToShow: tmp
+            })
+          } 
+          else
+          {
+            //console.log(tmp);
+            that.setData({
+              markersToShow: markers
             })
           }
 
@@ -488,5 +535,4 @@ Page({
       })
     }
   }
-
 })
