@@ -64,9 +64,17 @@ Page({
   onShareAppMessage: function () {
 
   },
+
   goToMap: function (param) {
     wx.navigateTo({
       url: '/pages/map/map',
     })
-  }
+  },
+
+  goToQuestion: function (param) {
+    wx.navigateTo({
+      url: '/pages/question/question',
+    })
+  },
+
 })

@@ -437,7 +437,7 @@ Page({
 
   updateUserLocation: function() {
     var that = this;
-   // console.log("timer running!", that.data.markersToShow);
+    //console.log("timer running!", that.data.markersToShow);
     // refresh user location, show nearby markers
     app.getLocationInfo(function (locationInfo) {
       //console.log('map', locationInfo);
