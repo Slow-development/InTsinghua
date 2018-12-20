@@ -26,6 +26,7 @@ Page({
     // the timer that is running, a function
     timer: "",
     destinationID: -1,
+    
   },
 
   /**
@@ -89,7 +90,13 @@ Page({
   onReady: function() {
     var that = this;
     //使用wx.createMapContext 获取map上下文
-    that.mapCtx = wx.createMapContext('myMap')
+    // var allpages = getCurrentPages();    //获取加载的页面
+    // var currentPage = allpages[allpages.length - 1];    //获取当前页面的对象
+    // var url = currentPage.route;
+    // console.log(url);
+    if (!that.hasOwnProperty('mapCtx') || that.mapCtx == null) {
+      that.mapCtx = wx.createMapContext('myMap');
+    }
     var thatScale = 0;
     //初始化markerToShow
     that.mapCtx.getScale({
@@ -376,7 +383,8 @@ Page({
       polyline: [],
       navigating: 0,
     })
-    console.log("failure!", that.mapCtx);
+    console.log("quitting...");
+    console.log(that.mapCtx);
     that.mapCtx.getScale({
       success: function(res) {
         console.log("success!", res.scale);
@@ -421,8 +429,12 @@ Page({
           })
         }
 
-      }
-    })
+      },
+      fail: function() {
+        console.log("failed to get scale!");
+        that.quitNavigate();
+      },
+    });
   },
 
   startTiming: function() {
