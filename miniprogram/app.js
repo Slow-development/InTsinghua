@@ -74,6 +74,7 @@ App({
   globalData: {
     userInfo: null,
     site: [],
-    answer: null
+    answer: null,
+    introduceSite: [],
   },
 })

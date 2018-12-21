@@ -12,6 +12,34 @@
   position: absolute;
   text-align: center;
 }
+
+.button2 {
+  top: 100rpx;
+  left: 30rpx;
+  font-size:100%;
+  width: 240rpx;
+  height: 70rpx;
+  color: #000;
+  line-height: 75rpx;
+  justify-content: center;
+  background-color: #fa88d8;
+  position: absolute;
+  text-align: center;
+}
+
+.button3 {
+  top: 20rpx;
+  left: 280rpx;
+  font-size:100%;
+  width: 240rpx;
+  height: 70rpx;
+  color: #000;
+  line-height: 75rpx;
+  justify-content: center;
+  background-color: #fa88d8;
+  position: absolute;
+  text-align: center;
+}
 .controls {
   position: relative;
   top: 50%;

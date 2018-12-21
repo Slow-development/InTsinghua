@@ -14,7 +14,9 @@ width: 360px;height :500px;
       <cover-image class="img2" src="/picture/icon_location.png" />
     </cover-view>
   </cover-view>
-  <cover-view class="button1" bindtap="quitNavigate" wx:if="{{navigating==1}}">退出导航</cover-view>
+  <cover-view class="button2" bindtap="quitNavigate" wx:if="{{navigating==1}}">退出导航</cover-view>
+  <cover-view class="button1" bindtap="introSite" >推荐景点</cover-view>
+  <cover-view class="button3" bindtap="quitIntroSite" >取消推荐</cover-view>
 </map>
 
 <view>

@@ -26,7 +26,7 @@ Page({
     // the timer that is running, a function
     timer: "",
     destinationID: -1,
-    
+    introductionID: -1,
   },
 
   /**
@@ -43,6 +43,9 @@ Page({
       that.setData({
         destinationId: -1,
       });
+    }
+    if (e.intro) {
+      that.introSite();
     }
     //console.log("DEST ", destinationId, e)
     //利用云函数初始化markers
@@ -106,14 +109,15 @@ Page({
         thatScale = res.scale;
         //define： scale < 12   choose school  
         //define: scale = n >= 12  markers_id < (n-11)*10
-        if (thatScale < 12) {
+        console.log(that.data.introductionID);
+        if (thatScale < 12 && that.data.introductionID < 0) {
           var tmp = markers.filter(function(item, index, array) {
             return item.id > 1000; // 取得满足id条件的
           });
           that.setData({
             markersToShow: tmp
           })
-        } else {
+        } else if (that.data.introductionID < 0) {
           var tmp = markers.filter(function(item, index, array) {
             return item.id < (thatScale - 11) * 100; // 取得满足id条件的
           });
@@ -492,7 +496,7 @@ Page({
     var that = this;
     var thatScale = 0;
     //console.log(e);
-    if (e.type == "end" && that.data.navigating == 0 && !that.recommedSite) {
+    if (e.type == "end" && that.data.navigating == 0 && !that.recommedSite && that.data.introductionID < 0) {
       that.mapCtx.getScale({
         success: function(res) {
           console.log(res.scale);
@@ -546,5 +550,30 @@ Page({
         }
       })
     }
+  },
+  introSite: function () {
+    var that = this;
+    this.data.introductionID = 1;
+    if (app.globalData.introduceSite.length == 0){
+      wx.navigateTo({
+        url: '/pages/question/question',
+      })
+    }
+    var tmp = markers.filter(function (item, index, array) {
+      if ((app.globalData.introduceSite.indexOf(item.id) > -1) && (Math.random() > 1 - 7.0 / app.globalData.introduceSite.length)) {
+        return item.id;
+      }
+    });
+    that.setData({
+      markersToShow: tmp
+    })
+    //console.log(that.data.markersToShow);
+
+  },
+
+  quitIntroSite: function () {
+    var that = this;
+    this.data.introductionID = -1;
+    this.onReady();
   }
 })
