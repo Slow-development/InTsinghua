@@ -6,9 +6,9 @@
   position: relative
 }
  .button{
-  top: 450rpx;
-  right: 430rpx;
-  font-size:100%;
+  top: 1000rpx;
+  right: 250rpx;
+  font-size:120%;
   justify-content:center;
   width: 300rpx;
   height: 80rpx;

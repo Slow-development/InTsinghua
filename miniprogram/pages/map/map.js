@@ -477,7 +477,7 @@ Page({
       });
       //身边东西的位置
       var tmp = markers.filter(function(item, index, array) {
-        return (Math.abs(item.latitude - self.latitude + item.longitude - self.longitude) < 0.0002); // 取得满足id条件的
+        return (Math.abs(item.latitude - self.latitude) + Math.abs(item.longitude - self.longitude) < 0.0002); // 取得满足id条件的
       });
       var des = markers.find(function(elem) {
         return elem.id == that.data.destinationId;

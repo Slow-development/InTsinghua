@@ -1,5 +1,5 @@
 <!--pages/index/index.wxml-->
 <view class = "pic"> 
 <image  style ="width:755rpx;height:1220rpx;margin:0px;"mode ="scaleToFill"src="/picture/background.jpg"></image>
-<button class = "button" bindtap = 'goToMap' >导航</button>
+<button class = "button" bindtap = 'goToMap' >开始游览</button>
 </view>
