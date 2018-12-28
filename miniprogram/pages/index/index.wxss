@@ -6,30 +6,30 @@
   position: relative
 }
  .button{
-  top: 60rpx;
-  right: 300rpx;
-  font-size:100%;
+  top: 1000rpx;
+  right: 250rpx;
+  font-size:120%;
   justify-content:center;
-  width: 156rpx;
-  height: 156rpx;
+  width: 300rpx;
+  height: 80rpx;
   color: #000;
   line-height: 75rpx;
   justify-content: center;
-  background-color: #fa88d8;
+  /*background-color: #fa88d8;*/
   position: absolute;
   border-radius: 78rpx; 
 }
  .button2{
-  top: 280rpx;
-  right: 300rpx;
+  top: 450rpx;
+  right: 30rpx;
   font-size:100%;
   justify-content:center;
-  width: 156rpx;
-  height: 156rpx;
+  width: 300rpx;
+  height: 80rpx;
   color: #000;
   line-height: 75rpx;
   justify-content: center;
-  background-color: #fa88d8;
+  /*background-color: #fa88d8;*/
   position: absolute;
   border-radius: 78rpx; 
 }

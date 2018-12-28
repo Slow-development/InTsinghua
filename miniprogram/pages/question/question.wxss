@@ -1,0 +1,39 @@
+/* miniprogram/pages/question/question.wxss */
+.section__title {
+  margin-top: 20px;
+  margin-left: 10px;
+  margin-bottom: 10px;
+}
+
+.header {
+  margin: 10px;
+}
+
+#submit {
+  width: 45%; 
+  margin-top: 35px; 
+  margin-left:10px;
+  float:left;
+  background-color: rgb(30, 161, 20);
+  color: white;
+}
+#reset {
+  width: 45%; 
+  margin-top: 35px; 
+  margin-right:10px;
+  float:right;
+  background-color: rgb(222, 44, 50);
+  color: white;
+}
+
+radio-group{
+  margin-left: 10px;
+}
+
+radio {
+      transform:scale(0.7);
+}
+
+page{
+  background-color: whitesmoke;
+}

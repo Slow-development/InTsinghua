@@ -26,6 +26,7 @@ Page({
     // the timer that is running, a function
     timer: "",
     destinationID: -1,
+    introductionID: -1,
   },
 
   /**
@@ -42,6 +43,9 @@ Page({
       that.setData({
         destinationId: -1,
       });
+    }
+    if (e.intro) {
+      that.introSite();
     }
     //console.log("DEST ", destinationId, e)
     //利用云函数初始化markers
@@ -89,7 +93,13 @@ Page({
   onReady: function() {
     var that = this;
     //使用wx.createMapContext 获取map上下文
-    that.mapCtx = wx.createMapContext('myMap')
+    // var allpages = getCurrentPages();    //获取加载的页面
+    // var currentPage = allpages[allpages.length - 1];    //获取当前页面的对象
+    // var url = currentPage.route;
+    // console.log(url);
+    if (!that.hasOwnProperty('mapCtx') || that.mapCtx == null) {
+      that.mapCtx = wx.createMapContext('myMap');
+    }
     var thatScale = 0;
     //初始化markerToShow
     that.mapCtx.getScale({
@@ -99,14 +109,15 @@ Page({
         thatScale = res.scale;
         //define： scale < 12   choose school  
         //define: scale = n >= 12  markers_id < (n-11)*10
-        if (thatScale < 12) {
+        console.log(that.data.introductionID);
+        if (thatScale < 12 && that.data.introductionID < 0) {
           var tmp = markers.filter(function(item, index, array) {
             return item.id > 1000; // 取得满足id条件的
           });
           that.setData({
             markersToShow: tmp
           })
-        } else {
+        } else if (that.data.introductionID < 0) {
           var tmp = markers.filter(function(item, index, array) {
             return item.id < (thatScale - 11) * 100; // 取得满足id条件的
           });
@@ -223,10 +234,12 @@ Page({
         longitude: item.location.longitude,
         latitude: item.location.latitude,
         title: item.name,
+        scale: item.showlevel,
         iconPath: "/picture/icon_scene.png",
         height: 50,
         width: 40
       }
+     // console.log("markers",markers)
     })
   },
 
@@ -374,34 +387,58 @@ Page({
       polyline: [],
       navigating: 0,
     })
-    console.log("failure!", that.mapCtx);
+    console.log("quitting...");
+    console.log(that.mapCtx);
     that.mapCtx.getScale({
       success: function(res) {
         console.log("success!", res.scale);
         //在这里计算显示哪些markers（或者再查询一下scale，再决定显示哪些markers）
         thatScale = res.scale;
-        //define： scale < 12   choose school  
-        //define: scale = n >= 12  markers_id < (n-11)*10
         if (thatScale < 12) {
-          var tmp = markers.filter(function(item, index, array) {
-            return item.id > 1000 // 取得满足id条件的
+          var tmp = markers.filter(function (item, index, array) {
+            return item.scale == 1; // 取得满足id条件的
           });
-          console.log(tmp);
-          that.setData({
-            markersToShow: tmp
-          })
-        } else {
-          var tmp = markers.filter(function(item, index, array) {
-            return item.id < (thatScale - 11) * 100; // 取得满足id条件的
-          });
-          console.log(tmp);
           that.setData({
             markersToShow: tmp
           })
         }
+        else if (thatScale < 14) {
+          var tmp = markers.filter(function (item, index, array) {
+            return item.scale <= 2; // 取得满足id条件的
+          });
+          that.setData({
+            markersToShow: tmp
+          })
+        }
+        else if (thatScale < 15) {
+          var tmp = markers.filter(function (item, index, array) {
+            return item.scale <= 3; // 取得满足id条件的
+          });
+          that.setData({
+            markersToShow: tmp
+          })
+        }
+        else if (thatScale < 17) {
+          var tmp = markers.filter(function (item, index, array) {
+            return item.scale <= 4; // 取得满足id条件的
+          });
+          that.setData({
+            markersToShow: tmp
+          })
+        }
+        else {
+          //console.log(tmp);
+          that.setData({
+            markersToShow: markers
+          })
+        }
 
-      }
-    })
+      },
+      fail: function() {
+        console.log("failed to get scale!");
+        that.quitNavigate();
+      },
+    });
   },
 
   startTiming: function() {
@@ -416,7 +453,7 @@ Page({
 
   updateUserLocation: function() {
     var that = this;
-    console.log("timer running!", that.data.markersToShow);
+    //console.log("timer running!", that.data.markersToShow);
     // refresh user location, show nearby markers
     app.getLocationInfo(function (locationInfo) {
       //console.log('map', locationInfo);
@@ -440,7 +477,7 @@ Page({
       });
       //身边东西的位置
       var tmp = markers.filter(function(item, index, array) {
-        return (Math.abs(item.latitude - self.latitude + item.longitude - self.longitude) < 0.0002); // 取得满足id条件的
+        return (Math.abs(item.latitude - self.latitude) + Math.abs(item.longitude - self.longitude) < 0.0002); // 取得满足id条件的
       });
       var des = markers.find(function(elem) {
         return elem.id == that.data.destinationId;
@@ -459,7 +496,7 @@ Page({
     var that = this;
     var thatScale = 0;
     //console.log(e);
-    if (e.type == "end" && that.data.navigating == 0) {
+    if (e.type == "end" && that.data.navigating == 0 && !that.recommedSite && that.data.introductionID < 0) {
       that.mapCtx.getScale({
         success: function(res) {
           console.log(res.scale);
@@ -469,24 +506,74 @@ Page({
           //define: scale = n >= 12  markers_id < (n-11)*10
           if (thatScale < 12) {
             var tmp = markers.filter(function(item, index, array) {
-              return item.id > 1000; // 取得满足id条件的
+              return item.scale == 1; // 取得满足id条件的
             });
             that.setData({
               markersToShow: tmp
             })
-          } else {
-            var tmp = markers.filter(function(item, index, array) {
-              return item.id < (thatScale - 11) * 100; // 取得满足id条件的
+          } 
+          else if(thatScale < 14)
+          {
+            var tmp = markers.filter(function (item, index, array) {
+              return item.scale <= 2; // 取得满足id条件的
             });
-            //console.log(tmp);
             that.setData({
               markersToShow: tmp
+            })
+          } 
+          else if(thatScale <15)
+          {
+            var tmp = markers.filter(function (item, index, array) {
+              return item.scale <= 3; // 取得满足id条件的
+            });
+            that.setData({
+              markersToShow: tmp
+            })
+          } 
+          else if(thatScale <17)
+          {
+            var tmp = markers.filter(function (item, index, array) {
+              return item.scale <= 4; // 取得满足id条件的
+            });
+            that.setData({
+              markersToShow: tmp
+            })
+          } 
+          else
+          {
+            //console.log(tmp);
+            that.setData({
+              markersToShow: markers
             })
           }
 
         }
       })
     }
-  }
+  },
+  introSite: function () {
+    var that = this;
+    this.data.introductionID = 1;
+    if (app.globalData.introduceSite.length == 0){
+      wx.navigateTo({
+        url: '/pages/question/question',
+      })
+    }
+    var tmp = markers.filter(function (item, index, array) {
+      if ((app.globalData.introduceSite.indexOf(item.id) > -1) && (Math.random() > 1 - 7.0 / app.globalData.introduceSite.length)) {
+        return item.id;
+      }
+    });
+    that.setData({
+      markersToShow: tmp
+    })
+    //console.log(that.data.markersToShow);
 
+  },
+
+  quitIntroSite: function () {
+    var that = this;
+    this.data.introductionID = -1;
+    this.onReady();
+  }
 })

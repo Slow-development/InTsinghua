@@ -1,0 +1,23 @@
+<!--miniprogram/pages/question/question.wxml-->
+<view class="header">您好！请先填写以下问卷，我们将根据问卷结果来推荐景点！</view>
+<form bindsubmit="formSubmit">
+  <view wx:for="{{questions}}">
+    <view class="section section_gap">
+      <view class="section__title">{{item}}</view>
+      <radio-group name="{{index}}">
+        <label>
+          <radio value="yes" />
+          是
+        </label>
+        <label>
+          <radio value="no" />
+          否
+        </label>
+      </radio-group>
+    </view>
+  </view>
+  <view class="btn-area">
+    <button id="submit" form-type="submit">Submit</button>
+    <button id="reset" form-type="reset">Reset</button>
+  </view>
+</form>

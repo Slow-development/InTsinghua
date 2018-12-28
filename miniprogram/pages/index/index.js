@@ -1,5 +1,5 @@
 // pages/index/index.js
-var app = getApp()
+const app = getApp()
 Page({
 
   /**
@@ -64,9 +64,22 @@ Page({
   onShareAppMessage: function () {
 
   },
+
   goToMap: function (param) {
     wx.navigateTo({
       url: '/pages/map/map',
     })
+  },
+
+  goToQuestion: function (param) {
+    if (app.globalData.answer == null) {
+      wx.navigateTo({
+        url: '/pages/question/question',
+      })
+    } else {
+      wx.navigateTo({
+        url: '/pages/map/map',
+      })
+    }
   }
 })
